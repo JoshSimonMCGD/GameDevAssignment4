@@ -5,11 +5,10 @@ using System.Numerics;
 // The namespace your code is in.
 namespace MohawkGame2D
 {
-    /// <summary>
-    ///     Your game code goes inside this class!
-    /// </summary>
+    //test 123333333333333333333333
     public class Game
     {
+        //hi wspppppppppppp
         private const int numTracks = 12; // Number of tracks
         private Music[] musicTracks = new Music[numTracks]; // Array to hold the 12 music tracks
         private bool[] tracksPlaying = new bool[numTracks]; // To track whether each track is playing
