@@ -5,9 +5,7 @@ using System.Numerics;
 // The namespace your code is in.
 namespace MohawkGame2D
 {
-    /// <summary>
-    ///     Your game code goes inside this class!
-    /// </summary>
+    //test 123333333333333333333333
     public class Game
     {
         // Place your variables here:
