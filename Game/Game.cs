@@ -26,12 +26,12 @@ namespace MohawkGame2D
             // Load your 12 music tracks (adjust file paths as needed)
             for (int i = 0; i < numTracks; i++)
             {
-                musicTracks[i] = Audio.LoadMusic($"../../../Assets/music{i + 1}.wav");
+                musicTracks[i] = Audio.LoadMusic($"../../../Audio/music{i + 1}.wav");
                 tracksPlaying[i] = false; // Initially no tracks are playing
             }
 
             // Play first track (just an example to start a track)
-            Audio.Play(musicTracks[0]);
+            //Audio.Play(musicTracks[0]);
         }
 
         public void Update()
@@ -61,16 +61,56 @@ namespace MohawkGame2D
             }
 
             // Handle button presses (these are just examples, implement actual button logic)
-            if (Input.IsKeyboardKeyDown(KeyboardInput.Space)) // If a button is clicked (for example, the spacebar)
+            if (Input.IsKeyboardKeyPressed(KeyboardInput.One)) // If a button is clicked (for example, the spacebar)
             {
                 ToggleTrack(0); // Toggle track 1 (index 0)
             }
-            if (Input.IsKeyboardKeyDown(KeyboardInput.Enter)) // If a button is clicked (for example, the Enter key)
+            if (Input.IsKeyboardKeyPressed(KeyboardInput.Two)) // If a button is clicked (for example, the Enter key)
             {
                 ToggleTrack(1); // Toggle track 2 (index 1)
             }
+            if (Input.IsKeyboardKeyPressed(KeyboardInput.Three)) // If a button is clicked (for example, the Enter key)
+            {
+                ToggleTrack(2); // Toggle track 3 (index 2)
+            }
+            if (Input.IsKeyboardKeyPressed(KeyboardInput.Four)) // If a button is clicked (for example, the Enter key)
+            {
+                ToggleTrack(3); // Toggle track 4 (index 3)
+            }
+            if (Input.IsKeyboardKeyPressed(KeyboardInput.Five)) // If a button is clicked (for example, the Enter key)
+            {
+                ToggleTrack(4); // Toggle track 5 (index 4)
+            }
+            if (Input.IsKeyboardKeyPressed(KeyboardInput.Six)) // If a button is clicked (for example, the Enter key)
+            {
+                ToggleTrack(5); // Toggle track 6 (index 5)
+            }
+            if (Input.IsKeyboardKeyPressed(KeyboardInput.Seven)) // If a button is clicked (for example, the Enter key)
+            {
+                ToggleTrack(6); // Toggle track 7 (index 6)
+            }
+            if (Input.IsKeyboardKeyPressed(KeyboardInput.Eight)) // If a button is clicked (for example, the Enter key)
+            {
+                ToggleTrack(7); // Toggle track 8 (index 7)
+            }
+            if (Input.IsKeyboardKeyPressed(KeyboardInput.Nine)) // If a button is clicked (for example, the Enter key)
+            {
+                ToggleTrack(8); // Toggle track 9 (index 8)
+            }
+            if (Input.IsKeyboardKeyPressed(KeyboardInput.Zero)) // If a button is clicked (for example, the Enter key)
+            {
+                ToggleTrack(9); // Toggle track 10 (index 9)
+            }
+            if (Input.IsKeyboardKeyPressed(KeyboardInput.Minus)) // If a button is clicked (for example, the Enter key)
+            {
+                ToggleTrack(10); // Toggle track 11 (index 10)
+            }
+            if (Input.IsKeyboardKeyPressed(KeyboardInput.Backspace)) // If a button is clicked (for example, the Enter key)
+            {
+                ToggleTrack(11); // Toggle track 12 (index 11)
+            }
         }
-
+         
         // Method to toggle a track (start it if it's not playing, stop it if it's playing)
         private void ToggleTrack(int trackIndex)
         {
