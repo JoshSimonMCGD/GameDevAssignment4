@@ -11,6 +11,11 @@ namespace MohawkGame2D
         private bool[] tracksPlaying = new bool[numTracks];
         private float[] trackStartTimes = new float[numTracks];
 
+        private const int numTracks = 12; // Number of tracks
+        private Music[] musicTracks = new Music[numTracks]; // Array to hold the 12 music tracks
+        private bool[] tracksPlaying = new bool[numTracks]; // To track whether each track is playing
+        private float[] trackStartTimes = new float[numTracks]; // Track when each loop should start
+
         private float tempo = 120f;
         private float secondsPerBeat => 60f / tempo;
         private float barDuration => secondsPerBeat * 4f;
