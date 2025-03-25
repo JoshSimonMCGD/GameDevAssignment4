@@ -1,66 +1,88 @@
-﻿// Include necessary namespaces
-using System;
+﻿using System;
 using System.Numerics;
+using System.Collections.Generic;
 
 namespace MohawkGame2D
 {
     public class Game
     {
-        private const int numTracks = 18; // Set Array to hold 18 tracks
-        private Music[] musicTracks = new Music[numTracks]; // Array to hold music tracks
-        private bool[] tracksPlaying = new bool[numTracks]; // Track playing states
-        private float[] trackStartTimes = new float[numTracks]; // Track loop start times
+        private const int numTracks = 18;
+        private Music[] musicTracks = new Music[numTracks];
+        private bool[] tracksPlaying = new bool[numTracks];
+        private float[] trackStartTimes = new float[numTracks];
 
-        private float tempo = 120f; // BPM
-        private float secondsPerBeat => 60f / tempo; // Time per beat in seconds
-        private float barDuration => secondsPerBeat * 4f; // 1 bar (4 beats)
-        private float loopDuration => barDuration * 8f; // 8-bar loop duration
+        private float tempo = 120f;
+        private float secondsPerBeat => 60f / tempo;
+        private float barDuration => secondsPerBeat * 4f;
+        private float loopDuration => barDuration * 8f;
 
-        private float lastBeatTime = 0f; // Tracks last beat for syncing
+        private float previousLoopTime = 0f;
+        private float currentLoopTime = 0f;
+
+        private struct QueuedToggle
+        {
+            public int trackIndex;
+            public bool turnOn;
+        }
+        private List<QueuedToggle> queuedToggles = new List<QueuedToggle>();
 
         public void Setup()
         {
-            // Load all 18 tracks 
             for (int i = 0; i < numTracks; i++)
             {
                 string filePath = $"../../../Audio/music{i + 1}.wav";
                 if (System.IO.File.Exists(filePath))
                 {
                     musicTracks[i] = Audio.LoadMusic(filePath);
-                    tracksPlaying[i] = false; // No tracks play to start
+                    tracksPlaying[i] = false;
                 }
-                
             }
         }
 
         public void Update()
         {
-            // Get elapsed time
             float currentTime = Time.SecondsElapsed;
+            previousLoopTime = currentLoopTime;
+            currentLoopTime = currentTime % loopDuration;
 
-            // Sync track loops to start on the correct beat
-            if (currentTime - lastBeatTime >= barDuration)
+            // If loop just restarted (crossed from high value to low)
+            if (currentLoopTime < previousLoopTime)
             {
-                lastBeatTime += barDuration; // Move to the next beat/bar
+                Console.WriteLine("Downbeat hit! Executing queued toggles.");
+                foreach (var toggle in queuedToggles)
+                {
+                    if (toggle.turnOn)
+                    {
+                        Console.WriteLine($"Starting track {toggle.trackIndex + 1} on downbeat.");
+                        Audio.Play(musicTracks[toggle.trackIndex]);
+                        tracksPlaying[toggle.trackIndex] = true;
+                        trackStartTimes[toggle.trackIndex] = currentTime - currentLoopTime;
+                    }
+                    else
+                    {
+                        Console.WriteLine($"Stopping track {toggle.trackIndex + 1} on downbeat.");
+                        Audio.Stop(musicTracks[toggle.trackIndex]);
+                        tracksPlaying[toggle.trackIndex] = false;
+                    }
+                }
+                queuedToggles.Clear();
             }
 
-            // Restart tracks if their loop has ended
+            // Restart loops if ended
             for (int i = 0; i < numTracks; i++)
             {
                 if (tracksPlaying[i] && (currentTime - trackStartTimes[i] >= loopDuration))
                 {
                     Audio.Play(musicTracks[i]);
-                    trackStartTimes[i] = lastBeatTime; // Resync to the next beat
+                    trackStartTimes[i] = currentTime - (currentTime % loopDuration);
                 }
             }
 
-            // Check keyboard input to toggle tracks
             CheckTrackToggles();
         }
 
         private void CheckTrackToggles()
         {
-            // Map keys to track indexes
             (KeyboardInput key, int trackIndex)[] keyMappings = new (KeyboardInput, int)[]
             {
                 (KeyboardInput.One, 0), (KeyboardInput.Two, 1), (KeyboardInput.Three, 2),
@@ -75,34 +97,22 @@ namespace MohawkGame2D
             {
                 if (Input.IsKeyboardKeyPressed(key))
                 {
-                    ToggleTrack(trackIndex);
+                    QueueToggleTrack(trackIndex);
                 }
             }
         }
 
-        private void ToggleTrack(int trackIndex)
+        private void QueueToggleTrack(int trackIndex)
         {
             if (trackIndex < 0 || trackIndex >= numTracks)
             {
-                Console.WriteLine($"Error: Invalid track index {trackIndex}");
+                Console.WriteLine($"Invalid track index {trackIndex}");
                 return;
             }
 
-            if (!tracksPlaying[trackIndex])
-            {
-                // Start playing the track in sync with the beat
-                Console.WriteLine($"Starting track {trackIndex + 1}");
-                Audio.Play(musicTracks[trackIndex]);
-                tracksPlaying[trackIndex] = true;
-                trackStartTimes[trackIndex] = lastBeatTime;
-            }
-            else
-            {
-                // Stop the track
-                Console.WriteLine($"Stopping track {trackIndex + 1}");
-                Audio.Stop(musicTracks[trackIndex]);
-                tracksPlaying[trackIndex] = false;
-            }
+            bool turnOn = !tracksPlaying[trackIndex];
+            Console.WriteLine($"Queuing {(turnOn ? "start" : "stop")} for track {trackIndex + 1} at next downbeat.");
+            queuedToggles.Add(new QueuedToggle { trackIndex = trackIndex, turnOn = turnOn });
         }
     }
 }
