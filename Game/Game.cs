@@ -44,8 +44,32 @@ namespace MohawkGame2D
             Window.SetSize(800, 600);
             
             hidden = new bool[19]; // Make sure the size matches the number of assets
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
         }
-
+            
+            
+            
+              
         public void Update()
         {
             float r = 1.0f;
@@ -114,8 +138,70 @@ namespace MohawkGame2D
             }
             
         }
-
-        // Method to toggle a track (start it if it's not playing, stop it if it's playing)
-        
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+        }    
     }
 }
