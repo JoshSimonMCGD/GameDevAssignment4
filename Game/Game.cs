@@ -45,6 +45,8 @@ namespace MohawkGame2D
         Texture2D OrangeNode = Graphics.LoadTexture("../../../VisualAssets/OrangeNode.png");
         Texture2D RedNode = Graphics.LoadTexture("../../../VisualAssets/RedNode.png");
         
+        Texture2D WizardArm = Graphics.LoadTexture("../../../VisualAssets/WizardArm.png");
+        
         // Track visibility of assets
         private bool[] hidden;
 
