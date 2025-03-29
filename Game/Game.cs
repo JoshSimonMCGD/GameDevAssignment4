@@ -6,7 +6,7 @@ namespace MohawkGame2D
 {
     public class Game
     {
-        private const int numTracks = 18; // Number of music tracks
+        private const int numTracks = 18; // Number of music tracks 
         private Music[] musicTracks = new Music[numTracks]; // Music tracks
         private bool[] tracksPlaying = new bool[numTracks]; // Whether each track is playing
         private float[] trackStartTimes = new float[numTracks];// Start times of each track
@@ -45,10 +45,10 @@ namespace MohawkGame2D
             previousLoopTime = currentLoopTime;// Previous loop time
             currentLoopTime = currentTime % loopDuration;// Current loop time
 
-            // If loop just restarted (crossed from high value to low)
+            // If loop just restarted (crossed from last beat to first)
             if (currentLoopTime < previousLoopTime)// Downbeat hit
             {
-                Console.WriteLine("Downbeat hit! Executing queued toggles.");// Log
+                Console.WriteLine("Downbeat hit! Playing Toggled ");// Log
                 foreach (var toggle in queuedToggles)// Execute queued toggles
                 {
                     if (toggle.turnOn)// If turn on
@@ -58,11 +58,9 @@ namespace MohawkGame2D
                         tracksPlaying[toggle.trackIndex] = true; // Set playing
                         trackStartTimes[toggle.trackIndex] = currentTime - currentLoopTime;// Set start time
                     }
-                    else //
+                    else 
                     {
-          
-                    
-                    
+     
                         Console.WriteLine($"Stopping track {toggle.trackIndex + 1} on downbeat.");
                         Audio.Stop(musicTracks[toggle.trackIndex]);// Stop track
                         tracksPlaying[toggle.trackIndex] = false;// Set not playing
