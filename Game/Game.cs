@@ -58,9 +58,9 @@ namespace MohawkGame2D
                         tracksPlaying[toggle.trackIndex] = true; // Set playing
                         trackStartTimes[toggle.trackIndex] = currentTime - currentLoopTime;// Set start time
                     }
-                    else 
+                    else
                     {
-     
+
                         Console.WriteLine($"Stopping track {toggle.trackIndex + 1} on downbeat.");
                         Audio.Stop(musicTracks[toggle.trackIndex]);// Stop track
                         tracksPlaying[toggle.trackIndex] = false;// Set not playing
