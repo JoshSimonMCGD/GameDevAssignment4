@@ -6,114 +6,161 @@ namespace MohawkGame2D
 {
     public class Game
     {
-        private const int numTracks = 18; // Number of music tracks 
-        private Music[] musicTracks = new Music[numTracks]; // Music tracks
-        private bool[] tracksPlaying = new bool[numTracks]; // Whether each track is playing
-        private float[] trackStartTimes = new float[numTracks];// Start times of each track
+        private const int numTracks = 18;
+        private Music[] musicTracks = new Music[numTracks];
+        private bool[] tracksPlaying = new bool[numTracks];
+        private float[] trackStartTimes = new float[numTracks];
+        private List<QueuedToggle> queuedToggles = new List<QueuedToggle>();
 
-        private float tempo = 120f;// Beats per minute
-        private float secondsPerBeat => 60f / tempo;// Seconds per beat
-        private float barDuration => secondsPerBeat * 4f;// Duration of a bar
-        private float loopDuration => barDuration * 8f;// Duration of a loop
+        private float tempo = 120f;
+        private float secondsPerBeat => 60f / tempo;
+        private float barDuration => secondsPerBeat * 4f;
+        private float loopDuration => barDuration * 8f;
+        private float previousLoopTime = 0f;
+        private float currentLoopTime = 0f;
 
-        private float previousLoopTime = 0f;// Previous loop time
-        private float currentLoopTime = 0f;// Current loop time
-
-        private struct QueuedToggle// Queued track toggle
+        private struct QueuedToggle
         {
-            public int trackIndex;// Track index
-            public bool turnOn;// Whether to turn on
+            public int trackIndex;
+            public bool turnOn;
         }
-        private List<QueuedToggle> queuedToggles = new List<QueuedToggle>(); // Queued track toggles
+
+        private Texture2D Background = Graphics.LoadTexture("../../../VisualAssets/BackgroundCave.png");
+        private Texture2D Shrine = Graphics.LoadTexture("../../../VisualAssets/BaseShrine.png");
+        private Texture2D[] assets;
+        private Vector2[] assetPositions;
+        private bool[] hidden;
 
         public void Setup()
         {
-            for (int i = 0; i < numTracks; i++) // Load music tracks
+            Window.SetTitle("Shadow Wizard Money Gang Mixer");
+            Window.SetSize(800, 600);
+            hidden = new bool[numTracks];
+
+            assets = new Texture2D[numTracks] {
+                Graphics.LoadTexture("../../../VisualAssets/PurpleTallGem.png"),
+                Graphics.LoadTexture("../../../VisualAssets/OrangeTallGem.png"),
+                Graphics.LoadTexture("../../../VisualAssets/RedTallGem.png"),
+                Graphics.LoadTexture("../../../VisualAssets/GreenTallGem.png"),
+                Graphics.LoadTexture("../../../VisualAssets/BlueTallGem.png"),
+                Graphics.LoadTexture("../../../VisualAssets/GreenMediumGem.png"),
+                Graphics.LoadTexture("../../../VisualAssets/RedMediumGem.png"),
+                Graphics.LoadTexture("../../../VisualAssets/GreenSmallGem.png"),
+                Graphics.LoadTexture("../../../VisualAssets/BlueSmallGem.png"),
+                Graphics.LoadTexture("../../../VisualAssets/DarkBlueSmallGem.png"),
+                Graphics.LoadTexture("../../../VisualAssets/VioletSmallGem.png"),
+                Graphics.LoadTexture("../../../VisualAssets/PurpleSmallGem.png"),
+                Graphics.LoadTexture("../../../VisualAssets/OrangeSmallGem.png"),
+                Graphics.LoadTexture("../../../VisualAssets/PinkSmallGem.png"),
+                Graphics.LoadTexture("../../../VisualAssets/BlueNode.png"),
+                Graphics.LoadTexture("../../../VisualAssets/PurpleNode.png"),
+                Graphics.LoadTexture("../../../VisualAssets/VioletNode.png"),
+                Graphics.LoadTexture("../../../VisualAssets/OrangeNode.png")
+            };
+
+            assetPositions = new Vector2[numTracks] {
+                new Vector2(308, 114), new Vector2(375, 136), new Vector2(435, 189),
+                new Vector2(182, 182), new Vector2(245, 138), new Vector2(139, 245),
+                new Vector2(491, 240), new Vector2(145, 362), new Vector2(200, 370),
+                new Vector2(264, 379), new Vector2(326, 365), new Vector2(355, 375),
+                new Vector2(433, 373), new Vector2(500, 366), new Vector2(114, 447),
+                new Vector2(218, 459), new Vector2(316, 453), new Vector2(447, 455)
+            };
+
+            for (int i = 0; i < numTracks; i++)
             {
-                string filePath = $"../../../Audio/music{i + 1}.wav";// File path
-                if (System.IO.File.Exists(filePath))// If file exists
+                string filePath = $"../../../Audio/music{i + 1}.wav";
+                if (System.IO.File.Exists(filePath))
                 {
-                    musicTracks[i] = Audio.LoadMusic(filePath);// Load music
-                    tracksPlaying[i] = false;// Not playing
+                    musicTracks[i] = Audio.LoadMusic(filePath);
+                    tracksPlaying[i] = false;
                 }
             }
         }
 
         public void Update()
         {
-            float currentTime = Time.SecondsElapsed;// Current time
-            previousLoopTime = currentLoopTime;// Previous loop time
-            currentLoopTime = currentTime % loopDuration;// Current loop time
+            float currentTime = Time.SecondsElapsed;
+            previousLoopTime = currentLoopTime;
+            currentLoopTime = currentTime % loopDuration;
 
-            // If loop just restarted (crossed from last beat to first)
-            if (currentLoopTime < previousLoopTime)// Downbeat hit
+            if (currentLoopTime < previousLoopTime)
             {
-                Console.WriteLine("Downbeat hit! Playing Toggled ");// Log
-                foreach (var toggle in queuedToggles)// Execute queued toggles
+                foreach (var toggle in queuedToggles)
                 {
-                    if (toggle.turnOn)// If turn on
+                    if (toggle.turnOn)
                     {
-                        Console.WriteLine($"Starting track {toggle.trackIndex + 1} on downbeat.");
-                        Audio.Play(musicTracks[toggle.trackIndex]); // Play track
-                        tracksPlaying[toggle.trackIndex] = true; // Set playing
-                        trackStartTimes[toggle.trackIndex] = currentTime - currentLoopTime;// Set start time
+                        Audio.Play(musicTracks[toggle.trackIndex]);
+                        tracksPlaying[toggle.trackIndex] = true;
+                        trackStartTimes[toggle.trackIndex] = currentTime - currentLoopTime;
                     }
                     else
                     {
-
-                        Console.WriteLine($"Stopping track {toggle.trackIndex + 1} on downbeat.");
-                        Audio.Stop(musicTracks[toggle.trackIndex]);// Stop track
-                        tracksPlaying[toggle.trackIndex] = false;// Set not playing
+                        Audio.Stop(musicTracks[toggle.trackIndex]);
+                        tracksPlaying[toggle.trackIndex] = false;
                     }
                 }
-                queuedToggles.Clear();// Clear queued toggles
+                queuedToggles.Clear();
             }
 
-            // Restart loops if ended
             for (int i = 0; i < numTracks; i++)
             {
-                if (tracksPlaying[i] && (currentTime - trackStartTimes[i] >= loopDuration))// If track playing and loop ended
+                if (tracksPlaying[i] && (currentTime - trackStartTimes[i] >= loopDuration))
                 {
                     Audio.Play(musicTracks[i]);
-                    trackStartTimes[i] = currentTime - (currentTime % loopDuration);// Set start time
+                    trackStartTimes[i] = currentTime - (currentTime % loopDuration);
                 }
             }
 
-            CheckTrackToggles();// Check for track toggles
+            CheckMouseInput();
+            DrawGraphics();
         }
 
-        private void CheckTrackToggles()
+        private void CheckMouseInput()
         {
-            (KeyboardInput key, int trackIndex)[] keyMappings = new (KeyboardInput, int)[]// Key mappings
-            {
-                (KeyboardInput.One, 0), (KeyboardInput.Two, 1), (KeyboardInput.Three, 2),
-                (KeyboardInput.Four, 3), (KeyboardInput.Five, 4), (KeyboardInput.Six, 5),
-                (KeyboardInput.Seven, 6), (KeyboardInput.Eight, 7), (KeyboardInput.Nine, 8),
-                (KeyboardInput.Zero, 9), (KeyboardInput.Minus, 10), (KeyboardInput.Equal, 11),
-                (KeyboardInput.Backspace, 12), (KeyboardInput.Tab, 13), (KeyboardInput.Q, 14),
-                (KeyboardInput.W, 15), (KeyboardInput.E, 16), (KeyboardInput.R, 17)
-            };
+            Vector2 MousePosition = new Vector2(Input.GetMouseX(), Input.GetMouseY());
 
-            foreach (var (key, trackIndex) in keyMappings)// Check key mappings
+            bool IsMouseOver(Vector2 pos, Texture2D texture) =>
+                MousePosition.X >= pos.X && MousePosition.X <= pos.X + texture.Width &&
+                MousePosition.Y >= pos.Y && MousePosition.Y <= pos.Y + texture.Height;
+
+            if (Input.IsMouseButtonPressed(MouseInput.Left))
             {
-                if (Input.IsKeyboardKeyPressed(key))// If key pressed
+                for (int i = 0; i < assets.Length; i++)
                 {
-                    QueueToggleTrack(trackIndex);// Queue track toggle
+                    if (IsMouseOver(assetPositions[i], assets[i]))
+                    {
+                        hidden[i] = !hidden[i];
+                        QueueToggleTrack(i);
+                    }
                 }
             }
         }
 
-        private void QueueToggleTrack(int trackIndex)// Queue track toggle
+        private void QueueToggleTrack(int trackIndex)
         {
-            if (trackIndex < 0 || trackIndex >= numTracks) // If invalid track index     
-            {
-                Console.WriteLine($"Invalid track index {trackIndex}");
-                return;
-            }
+            if (trackIndex < 0 || trackIndex >= numTracks) return;
+            bool turnOn = !tracksPlaying[trackIndex];
+            queuedToggles.Add(new QueuedToggle { trackIndex = trackIndex, turnOn = turnOn });
+        }
 
-            bool turnOn = !tracksPlaying[trackIndex];// Whether to turn on
-            Console.WriteLine($"Queuing {(turnOn ? "start" : "stop")} for track {trackIndex + 1} at next downbeat.");
-            queuedToggles.Add(new QueuedToggle { trackIndex = trackIndex, turnOn = turnOn });// Add to queued toggles
+        private void DrawGraphics()
+        {
+            ColorF NormTint = new ColorF(1.0f, 1.0f, 1.0f);
+            ColorF OffTint = new ColorF(0.5f, 0.5f, 0.5f);
+
+            Graphics.Tint = NormTint;
+            Graphics.Draw(Background, 0, 0);
+            Graphics.Draw(Shrine, 0, 0);
+
+            Graphics.Tint = OffTint;
+            for (int i = 0; i < assets.Length; i++)
+            {
+                if (!hidden[i])
+                {
+                    Graphics.Draw(assets[i], assetPositions[i].X, assetPositions[i].Y);
+                }
+            }
         }
     }
 }
