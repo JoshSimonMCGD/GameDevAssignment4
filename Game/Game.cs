@@ -114,6 +114,21 @@ namespace MohawkGame2D
 
             CheckMouseInput();// Check the mouse input
             DrawGraphics();// Draw the graphics
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
         }
 
         private void CheckMouseInput()
