@@ -55,7 +55,7 @@ namespace MohawkGame2D
                 Graphics.LoadTexture("../../../VisualAssets/BlueNode.png"),
                 Graphics.LoadTexture("../../../VisualAssets/PurpleNode.png"),
                 Graphics.LoadTexture("../../../VisualAssets/VioletNode.png"),
-                Graphics.LoadTexture("../../../VisualAssets/OrangeNode.png")
+                Graphics.LoadTexture("../../../VisualAssets/OrangeNode.png"),
             };
 
             assetPositions = new Vector2[numTracks] {
@@ -80,6 +80,10 @@ namespace MohawkGame2D
 
         public void Update()// Update method
         {
+
+            float mouseX = Input.GetMouseX();// Get the mouse x position
+            float mouseY = Input.GetMouseY();// Get the mouse y position
+
             float currentTime = Time.SecondsElapsed;// Get the current time in seconds
             previousLoopTime = currentLoopTime;// Set the previous loop time to the current loop time
             currentLoopTime = currentTime % loopDuration;// Set the current loop time to the current time modulo the loop duration
@@ -114,8 +118,18 @@ namespace MohawkGame2D
 
             CheckMouseInput();// Check the mouse input
             DrawGraphics();// Draw the graphics
-        }
 
+            Texture2D WizardArm = Graphics.LoadTexture("../../../VisualAssets/WizardArm.png"); // Call in the WizardArm cursor
+
+            float clampedX = Math.Clamp(mouseX, 50, 2000 - WizardArm.Width);
+            float clampedY = Math.Clamp(mouseY, 300, 1000 - WizardArm.Height);
+            Vector2 clampedMousePosition = new Vector2(clampedX, clampedY);
+
+            ColorF NormTint = new ColorF(1.0f, 1.0f, 1.0f);// Set the normal tint color
+            ColorF OffTint = new ColorF(0.5f, 0.5f, 0.5f);// Set the off tint color
+            Graphics.Tint = NormTint;// Set the tint color
+            Graphics.Draw(WizardArm, clampedX - 45, clampedY);// Draw the wizard arm
+        }
         private void CheckMouseInput()
         {
             Vector2 MousePosition = new Vector2(Input.GetMouseX(), Input.GetMouseY());// Get the mouse position
