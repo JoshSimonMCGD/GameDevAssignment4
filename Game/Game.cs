@@ -130,6 +130,7 @@ namespace MohawkGame2D
             Graphics.Tint = NormTint;// Set the tint color
             Graphics.Draw(WizardArm, clampedX - 45, clampedY);// Draw the wizard arm
         }
+      
         private void CheckMouseInput()
         {
             Vector2 MousePosition = new Vector2(Input.GetMouseX(), Input.GetMouseY());// Get the mouse position
